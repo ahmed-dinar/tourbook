@@ -1,0 +1,122 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postcontents">
+
+    <div class="card mb-4 create-post">
+<!--        <div class="card-header">-->
+<!--            <strong>Create Post</strong>-->
+<!--        </div>-->
+        <form method="POST" th:action="@{/posts}">
+            <div class="mb-3 d-flex flex-row">
+                <div class="editor-image">
+                    <img th:src="@{images/img_avatar.png}"/>
+                </div>
+                <textarea class="form-control w-100 noselect" name="text" placeholder="Share your experience!"></textarea>
+            </div>
+
+            <div class="mb-3 d-flex flex-row">
+                <div class="input-group is-invalid pl-2 pr-1 w-60">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="validatedInputGroupSelect">
+                            <img th:src="@{images/map-pin.svg}"/>
+                        </label>
+                    </div>
+                    <select class="custom-select" id="validatedInputGroupSelect" name="location" required>
+                        <option value="">Select place..</option>
+                        <option
+                                th:each="location: ${locations}"
+                                th:value="${location.getId()}"
+                                th:text="${location.getName().replaceAll('([A-Z][a-z]+)', ' $1').trim()}"
+                        ></option>
+                    </select>
+                </div>
+
+                <div class="input-group is-invalid pl-1 pr-2 w-30">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="validatedInputGroupPrivacySelect">
+                            <img th:src="@{images/lock.svg}"/>
+                        </label>
+                    </div>
+                    <select class="custom-select" id="validatedInputGroupPrivacySelect" name="privacy" required>
+                        <option
+                                th:each="privacy: ${privacyList}"
+                                th:value="${privacy}"
+                                th:selected="${privacy == 'PUBLIC'}"
+                                th:text="${privacy}"
+                        ></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary mr-3 w-10" >Publish</button>
+            </div>
+        </form>
+    </div>
+
+
+
+    <div class="card post-card"
+         th:each="post: ${posts}"
+    >
+        <div class="card-body">
+            <div class="d-flex flex-row mb-3">
+                <div class="user-image">
+                    <img th:src="@{images/img_avatar.png}"/>
+                </div>
+                <div class="flex-grow-1 pl-3">
+                    <a th:href="@{'/user/' + ${post.getUser().getUsername()}}" class="card-title">
+                        [[${post.getUser().getFullName()}]]
+                    </a>
+                    <span class="card-subtitle post-location ml-2">
+                        <img th:src="@{images/map-pin.svg}"/>
+                        <a href="#">
+                            is in <strong>[[${post.getLocation().getName()}]]</strong>
+                        </a>
+                    </span>
+                    <h6 class="card-subtitle post-date text-muted">
+                        <small>[[${#dates.format(post.getCreatedAt(), "MMMM d 'at' hh:mm a")}]]</small>
+                    </h6>
+                </div>
+            </div>
+
+            <p class="card-text" th:if="${post.getText() != null}">
+                [[${post.getText()}]]
+            </p>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-between actions">
+                <a href="#" class="card-link">
+                    <img th:src="@{images/heart.svg}"/>
+                    <small>[[${post.getLikes().size()}]]</small>
+                </a>
+                <a href="#" class="card-link">
+                    <img th:src="@{images/message-circle.svg}"/>
+                    <small>[[${post.getComments().size()}]]</small>
+                </a>
+                <a href="#" class="card-link">
+                    <img th:src="@{images/share.svg}"/>
+                    <small>0</small>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <nav th:if="${posts.getTotalPages() > 0}" aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${posts.isFirst() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/?page={id}(id=${posts.isFirst() ? '#' : posts.previousOrFirstPageable().getPageNumber() + 1})}"
+                >Previous</a>
+            </li>
+
+            <li class="page-item"
+                th:each="pageNo: ${#numbers.sequence(1, posts.getTotalPages())}"
+                th:classappend="${posts.getNumber() == pageNo - 1  ? 'active' : ''}"
+            >
+                <a class="page-link" th:href="@{'/?page=' + ${pageNo}}">[[${pageNo}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${posts.isLast() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/?page={id}(id=${posts.isLast() ? '#' : posts.nextOrLastPageable().getPageNumber() + 1})}"
+                >Next</a>
+            </li>
+        </ul>
+    </nav>
+</th:block>

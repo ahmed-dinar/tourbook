@@ -1,0 +1,132 @@
+body, html {
+    font-family: 'Poppins', 'Roboto', sans-serif;
+    background-color: #f5f8fa;
+    /*color: #626c72;*/
+    font-size: 14px;
+}
+
+.noselect:focus {
+    outline: none;
+    outline-width: 0;
+}
+
+.bg-nav {
+    background-color: #3f4257;
+}
+
+.main-container {
+    padding-top: 30px;
+}
+
+.navbar {
+    padding: 4px 1rem;
+}
+
+.navbar-collapse ul {
+    margin-bottom: 0 !important;
+}
+
+.navbar-collapse .btn-sm {
+    padding: 3px 5px;
+    font-size: 12px;
+    border-radius: 2px;
+}
+
+.navbar-collapse .form-control-sm {
+    padding: 2px 5px;
+    font-size: 12px;
+    line-height: 1;
+    border: none;
+}
+
+.card {
+    border: none;
+}
+
+.post-card {
+    margin-bottom: 15px;
+}
+
+.post-card .card-text {
+    font-size: 14px;
+    color: #626c72;
+    font-family: 'Roboto', sans-serif;
+}
+
+.post-card a {
+    color: #3f4257;
+    text-decoration: none;
+}
+
+.post-card .card-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.post-card .user-image img {
+    width: 50px;
+    border-radius: 50%;
+}
+
+.post-card .post-date {
+    font-size: 14px;
+    margin-top: 1px;
+}
+
+.post-card .post-location {
+    font-size: 13px;
+}
+
+.post-card .post-location img {
+    width: 13px;
+    height: 13px;
+}
+
+.post-card .actions img {
+    width: 15px;
+    height: 15px;
+}
+
+.post-card .actions .card-link {
+    color:  #9a9fbf;
+    fill: #9a9fbf;
+}
+
+.create-post, .create-post .input-group-text, textarea, select {
+    font-size: 14px !important;
+}
+
+.create-post textarea {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #e7edf2;
+}
+
+.create-post .editor-image {
+    padding: 10px 10px;
+}
+
+.create-post .editor-image img {
+    width: 50px;
+    border-radius: 50%;
+}
+
+.create-post .card-header {
+    border-bottom: 1px solid #e7edf2;
+}
+
+ .create-post .input-group-text, select {
+    font-size: 12px !important;
+}
+
+.create-post .input-group-text {
+    padding: 0 4px;
+    background-color: #fff;
+}
+
+.create-post .input-group-text img {
+    width: 20px;
+}
+
+

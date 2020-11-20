@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<div th:replace="fragments/head :: header"></div>
+<body>
+    <div th:replace="fragments/navbar :: navigation"></div>
+
+
+    <div class="container-fluid main-container">
+        <div class="row">
+            <div class="container">
+                <div class="d-flex flex-row">
+                    <!-- left sidebar profile -->
+                    <div class="p-4 w-25 bd-highlight">Flex item</div>
+
+                    <!-- middle column posts -->
+                    <div class="p-10 w-50 bd-highlight">
+                        <th:block th:replace="fragments/posts :: postcontents"/>
+                    </div>
+
+                    <!-- right sidebar suggestions -->
+                    <div class="p-4 w-25 bd-highlight">Flex item</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <th:block th:replace="fragments/scripts :: end"/>
+</body>
+</html>
