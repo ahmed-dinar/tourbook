@@ -70,8 +70,12 @@ body, html {
 }
 
 .post-card .post-date {
-    font-size: 14px;
+    font-size: 16px;
     margin-top: 1px;
+}
+
+.post-date img {
+    width: 13px;
 }
 
 .post-card .post-location {
@@ -129,4 +133,7 @@ body, html {
     width: 20px;
 }
 
-
+.edit-post .dropdown-item {
+    padding: 3px 7px;
+    font-size: 13px;
+}

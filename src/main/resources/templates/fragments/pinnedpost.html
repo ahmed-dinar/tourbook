@@ -1,0 +1,39 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="pinnedpost">
+    <div class="card post-card animate__animated animate__fadeIn"
+         th:if="${pinnedPost != null}"
+    >
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-between mb-3">
+                <div class="left-post d-flex flex-row">
+                    <div class="user-image">
+                        <img th:src="@{/images/img_avatar.png}"/>
+                    </div>
+                    <div class="flex-grow-1 pl-3">
+                        <a th:href="@{'/users/' + ${pinnedPost.getPost().getUser().getUsername()}}" class="card-title">
+                            [[${pinnedPost.getPost().getUser().getFullName()}]]
+                        </a>
+                        <span class="card-subtitle post-location ml-2">
+                            <img th:src="@{/images/map-pin.svg}"/>
+                            <a href="#">
+                                is in <strong>[[${pinnedPost.getPost().getLocation().getName()}]]</strong>
+                            </a>
+                        </span>
+                        <h6 class="card-subtitle post-date text-muted">
+                            <small>
+                                [[${#dates.format(pinnedPost.getPost().getCreatedAt(), "MMMM d 'at' hh:mm a")}]]
+                                <span class="ml-2"><img th:src="@{/images/globe.svg}"/></span>
+                            </small>
+                        </h6>
+                    </div>
+                </div>
+                <div class="right-post edit-post">
+                    <th:block th:replace="fragments/editpost :: editpinnedpost"/>
+                </div>
+            </div>
+
+            <p class="card-text" th:if="${pinnedPost.getPost().getText() != null}">
+                [[${pinnedPost.getPost().getText()}]]
+            </p>
+        </div>
+    </div>
+</th:block>

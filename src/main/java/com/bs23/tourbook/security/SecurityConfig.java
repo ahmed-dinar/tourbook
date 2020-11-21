@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -34,14 +37,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
+  @Bean
+  public AuthenticationEntryPoint authEntryPoint() {
+    return new CustomAuthenticationEntryPoint();
+  }
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
         .authorizeRequests()
-          .antMatchers(HttpMethod.POST, "/posts")
+          .antMatchers("/posts", "/posts/**")
             .hasRole("USER")
-          .antMatchers("/", "/**")
-            .permitAll()
+          .antMatchers("/").permitAll()
+          .antMatchers("/h2-console/**").permitAll()
+          .antMatchers("/**").permitAll()
+
+        .and()
+          .exceptionHandling()
+            .authenticationEntryPoint(authEntryPoint())
 
         .and()
           .formLogin()
@@ -58,5 +71,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .headers()
             .frameOptions()
             .disable();
+  }
+
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web
+        .ignoring()
+        .antMatchers("/h2-console/**");
   }
 }

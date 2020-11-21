@@ -1,29 +1,22 @@
 package com.bs23.tourbook.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.util.Date;
 
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
-public class PostComment {
+public class PostComment extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-
-  @CreationTimestamp
-  @Column(nullable = false)
-  private Date createdAt;
-
-  @UpdateTimestamp
-  @Column(nullable = false)
-  private Date updatedAt;
 
   @Column(nullable = false)
   @Length(max = 1000)
@@ -34,8 +27,9 @@ public class PostComment {
   @NonNull
   private final User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = Post.class)
+  @JoinColumn(name = "post_id", referencedColumnName = "id")
   @NonNull
-  @ToString.Exclude
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private final Post post;
 }

@@ -1,14 +1,12 @@
 package com.bs23.tourbook.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,59 +15,45 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
-public class Post {
+public class Post extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-
-  @CreationTimestamp
-  @Column(nullable = false)
-  private Date createdAt;
-
-  @UpdateTimestamp
-  @Column(nullable = false)
-  private Date updatedAt;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   @NonNull
   private Privacy privacy;
 
-  @Column(nullable = false)
-  private Boolean isPinned = false;
-
   @Column(nullable = true)
   @Length(max = 1000)
   private String text;
 
-  @ManyToOne()
+  @ManyToOne(fetch = FetchType.EAGER)
   @NonNull
   private User user;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.EAGER)
   @NonNull
   private Location location;
 
+  /**
+   * This is EAGER For now, need to show likes & user images in posts page
+   * May be moved to Ajax for images & User @Formula just to return counts?
+   */
   @OneToMany(
-      cascade = CascadeType.ALL,
       fetch = FetchType.EAGER,
       mappedBy = "post",
       orphanRemoval = true
   )
-  @LazyCollection(LazyCollectionOption.EXTRA)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Set<PostLike> likes = new HashSet<>();
 
-  // TODO: Need to be clear about biodirectional stackoverflow issue
-  // https://stackoverflow.com/questions/56009334/hibernate-stackoverflowerror-with-onetomany-and-manytoone-mapping
-  // https://stackoverflow.com/questions/30995226/onetomany-get-size-of-collection
-  @OneToMany(
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY,
-      mappedBy = "post",
-      orphanRemoval = true
-  )
-  @LazyCollection(LazyCollectionOption.EXTRA)
-  private Set<PostComment> comments = new HashSet<>();
+  /**
+   * May be use @OneToMany & FetchType.LAZY? Not sure about performance yet
+   */
+  @Formula("SELECT COUNT(pc.id) FROM post_comment pc WHERE pc.post_id = id")
+  private Long comments;
 
   public static enum Privacy {
     PUBLIC, PRIVATE

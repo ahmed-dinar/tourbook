@@ -10,7 +10,15 @@
             <div class="container">
                 <div class="d-flex flex-row">
                     <!-- left sidebar profile -->
-                    <div class="p-4 w-25 bd-highlight">Flex item</div>
+                    <div class="p-4 w-25 bd-highlight">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    Recent Places
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- middle column posts -->
                     <div class="p-10 w-50 bd-highlight">
@@ -18,13 +26,21 @@
                     </div>
 
                     <!-- right sidebar suggestions -->
-                    <div class="p-4 w-25 bd-highlight">Flex item</div>
+                    <div class="p-4 w-25 bd-highlight">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    Top Travellers
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
     <th:block th:replace="fragments/scripts :: end"/>
+    <script type="text/javascript" src="/js/posts.js"></script>
 </body>
 </html>

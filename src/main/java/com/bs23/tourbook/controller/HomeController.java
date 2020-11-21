@@ -5,6 +5,7 @@ import com.bs23.tourbook.data.PostRepository;
 import com.bs23.tourbook.model.Location;
 import com.bs23.tourbook.model.Post;
 import com.bs23.tourbook.model.UserPrincipal;
+import com.bs23.tourbook.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,11 +25,11 @@ import java.util.Optional;
 @RequestMapping("/")
 public class HomeController {
 
-  private final PostRepository postRepo;
+  private final PostService postService;
   private final LocationRepository locationRepo;
 
-  public HomeController(PostRepository postRepo, LocationRepository locationRepo) {
-    this.postRepo = postRepo;
+  public HomeController(PostService postService, LocationRepository locationRepo) {
+    this.postService = postService;
     this.locationRepo = locationRepo;
   }
 
@@ -37,16 +38,12 @@ public class HomeController {
       Model model,
       @RequestParam(required = false) Optional<Integer> page,
       @RequestParam(required = false) Optional<Integer> size,
-      @AuthenticationPrincipal UserPrincipal user
+      @AuthenticationPrincipal UserPrincipal userPrincipal
   ) {
-    // TODO: may be move into configuration instead of hardcoed?
-    int DEFAULT_PAGE_SIZE = 10;
-
-    Pageable pageable = PageRequest.of(page.orElse(1) - 1, size.orElse(DEFAULT_PAGE_SIZE + 1) - 1);
-    Page<Post> posts = postRepo.findByPrivacyEqualsOrderByCreatedAtDesc(Post.Privacy.PUBLIC, pageable);
-    model.addAttribute("posts", posts);
-
+    Page<Post> posts = postService.getPublicPosts(page, size, userPrincipal);
     List<Location> locations = locationRepo.findAll();
+
+    model.addAttribute("posts", posts);
     model.addAttribute("locations", locations);
     model.addAttribute("privacyList", Post.Privacy.values());
 

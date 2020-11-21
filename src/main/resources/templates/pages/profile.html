@@ -6,14 +6,31 @@
 
     <div class="container-fluid main-container">
         <div class="row">
-            <div class="container">
+            <div class="container" style="width: 80%">
+                <div class="d-flex justify-content-center align-items-center mb-2">
+                    <img th:src="@{/images/img_avatar.png}" width="90px" style="border-radius: 50%" />
+                </div>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <h4>[[${user.getFullName()}]]</h4>
+                </div>
                 <div class="d-flex flex-row">
-                    <div>User</div>
+                    <div class="p-4 bd-highlight" style="min-width: 350px">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5>[[${user.getFullName()}]]</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- middle column posts -->
+                    <div class="p-10 flex-grow-1 bd-highlight">
+                        <th:block th:replace="fragments/posts :: postcontents"/>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <th:block th:replace="fragments/scripts :: end"/>
+    <script type="text/javascript" src="/js/posts.js"></script>
 </body>
 </html>

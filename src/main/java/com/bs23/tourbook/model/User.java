@@ -18,18 +18,10 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
-public class User  {
+public class User extends BaseEntity  {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-
-  @CreationTimestamp
-  @Column(nullable = false)
-  private Date createdAt;
-
-  @UpdateTimestamp
-  @Column(nullable = false)
-  private Date updatedAt;
 
   @Column(nullable = false, unique = true, length = 30)
   @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters long")

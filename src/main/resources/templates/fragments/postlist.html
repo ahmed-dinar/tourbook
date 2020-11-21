@@ -1,0 +1,57 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postlist">
+    <div class="card post-card animate__animated animate__fadeIn"
+         th:each="post: ${posts}"
+    >
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-between mb-3">
+                <div class="left-post d-flex flex-row">
+                    <div class="user-image">
+                        <img th:src="@{/images/img_avatar.png}"/>
+                    </div>
+                    <div class="flex-grow-1 pl-3">
+                        <a th:href="@{'/users/' + ${post.getUser().getUsername()}}" class="card-title">
+                            [[${post.getUser().getFullName()}]]
+                        </a>
+                        <span class="card-subtitle post-location ml-2">
+                            <img th:src="@{/images/map-pin.svg}"/>
+                            <a href="#">
+                                is in <strong>[[${post.getLocation().getName()}]]</strong>
+                            </a>
+                        </span>
+                        <h6 class="card-subtitle post-date text-muted">
+                            <small>
+                                [[${#dates.format(post.getCreatedAt(), "MMMM d 'at' hh:mm a")}]]
+                                <span class="ml-2">
+                                    <img th:src="${(post.getPrivacy() == T(com.bs23.tourbook.model.Post.Privacy).PUBLIC) ? '/images/globe.svg' : '/images/locked.svg'}" />
+                                </span>
+                            </small>
+                        </h6>
+                    </div>
+                </div>
+                <div class="right-post edit-post">
+                    <th:block th:replace="fragments/editpost :: editpost"/>
+                </div>
+            </div>
+
+            <p class="card-text" th:if="${post.getText() != null}">
+                [[${post.getText()}]]
+            </p>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-row justify-content-between actions">
+                <a href="#" class="card-link">
+                    <img th:src="@{/images/heart.svg}"/>
+                    <small>[[${post.getLikes().size()}]]</small>
+                </a>
+                <a href="#" class="card-link">
+                    <img th:src="@{/images/message-circle.svg}"/>
+                    <small>[[${post.getComments()}]]</small>
+                </a>
+                <a href="#" class="card-link">
+                    <img th:src="@{/images/share.svg}"/>
+                    <small>0</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</th:block>

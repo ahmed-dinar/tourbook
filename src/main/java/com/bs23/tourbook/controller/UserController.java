@@ -4,12 +4,17 @@
  */
 package com.bs23.tourbook.controller;
 
+import com.bs23.tourbook.data.LocationRepository;
+import com.bs23.tourbook.data.PinnedPostRepository;
 import com.bs23.tourbook.data.PostRepository;
 import com.bs23.tourbook.data.UserRepository;
-import com.bs23.tourbook.model.Post;
-import com.bs23.tourbook.model.User;
-import com.bs23.tourbook.model.UserPrincipal;
+import com.bs23.tourbook.helper.Pair;
+import com.bs23.tourbook.model.*;
+import com.bs23.tourbook.service.PostService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -17,41 +22,47 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
 
 @Slf4j
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
   private final UserRepository userRepo;
-  private final PostRepository postRepo;
+  private final PostService postService;
+  private final LocationRepository locationRepo;
 
-  public UserController(UserRepository userRepo, PostRepository postRepo) {
+  public UserController(UserRepository userRepo, PostService postService, LocationRepository locationRepo) {
     this.userRepo = userRepo;
-    this.postRepo = postRepo;
+    this.postService = postService;
+    this.locationRepo = locationRepo;
   }
 
   @GetMapping("/{username}")
   public String getUserProfile(
       @PathVariable String username,
       Model model,
+      @RequestParam(required = false) Optional<Integer> page,
+      @RequestParam(required = false) Optional<Integer> size,
       @AuthenticationPrincipal UserPrincipal userPrincipal
   ) {
     User user = Optional
         .ofNullable(userRepo.findByUsername(username))
         .orElseThrow(() -> new UsernameNotFoundException("No user found"));
 
-    if (userPrincipal != null && userPrincipal.getUser().getUsername().equals(username)) {
-      List<Post> posts = postRepo.findByUser_IdAndIsPinnedOrderByCreatedAtDesc(user.getId(), false);
-      List<Post> pinnedPost = postRepo.findByUser_IdAndIsPinnedOrderByCreatedAtDesc(user.getId(), true);
-      model.addAttribute("posts", posts);
-      model.addAttribute("pinnedPost", pinnedPost.isEmpty() ? null : pinnedPost.get(0));
-    }
+    Pair<Optional<PinnedPost>, Page<Post>> userPosts = postService.getUserPosts(page, size, userPrincipal, user);
+    List<Location> locations = locationRepo.findAll();
+
+    model.addAttribute("user", user);
+    model.addAttribute("pinnedPost",  userPosts.getFirst().orElse(null));
+    model.addAttribute("posts", userPosts.getSecond());
+    model.addAttribute("locations", locations);
+    model.addAttribute("privacyList", Post.Privacy.values());
 
     return "pages/profile";
   }

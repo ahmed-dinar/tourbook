@@ -11,18 +11,10 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @RequiredArgsConstructor
-public class Location {
+public class Location extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-
-  @CreationTimestamp
-  @Column(nullable = false)
-  private Date createdAt;
-
-  @UpdateTimestamp
-  @Column(nullable = false)
-  private Date updatedAt;
 
   @Column(nullable = false, unique = true)
   @NonNull

@@ -1,0 +1,24 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="pagination">
+    <nav th:if="${posts.getTotalPages() > 0}" aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${posts.isFirst() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/?page={id}(id=${posts.isFirst() ? '#' : posts.previousOrFirstPageable().getPageNumber() + 1})}"
+                >Previous</a>
+            </li>
+
+            <li class="page-item"
+                th:each="pageNo: ${#numbers.sequence(1, posts.getTotalPages())}"
+                th:classappend="${posts.getNumber() == pageNo - 1  ? 'active' : ''}"
+            >
+                <a class="page-link" th:href="@{'/?page=' + ${pageNo}}">[[${pageNo}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${posts.isLast() ? 'disabled' : ''}">
+                <a class="page-link"
+                   th:href="@{/?page={id}(id=${posts.isLast() ? '#' : posts.nextOrLastPageable().getPageNumber() + 1})}"
+                >Next</a>
+            </li>
+        </ul>
+    </nav>
+</th:block>

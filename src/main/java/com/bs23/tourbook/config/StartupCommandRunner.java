@@ -10,9 +10,11 @@ import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -39,8 +41,12 @@ public class StartupCommandRunner implements CommandLineRunner {
   @Autowired
   private PostLikeRepository postLikeRepository;
 
+  @Autowired
+  private PinnedPostRepository pinnedPostRepo;
+
   Faker faker = new Faker();
 
+  @Transactional
   @Override
   public void run(String... args) throws Exception {
     log.info("Running CommandLineRunner...........");
@@ -72,6 +78,7 @@ public class StartupCommandRunner implements CommandLineRunner {
     this.insertPost(userRepository.findAll());
   }
 
+  @Transactional
   private void insertPost(List<User> users) {
     Stream
         .of("Sylhet", "Bandarban", "Hardhome", "Gotham", "Winterfell", "CentralPark", "Rivia", "CastleBlack", "KingsLanding")
@@ -120,6 +127,13 @@ public class StartupCommandRunner implements CommandLineRunner {
     log.info("Posts saved --> " + savedPosts.size());
     log.info("Comments saved --> " + postCommentRepository.count());
     log.info("Likes saved --> " + postLikeRepository.count());
+
+    List<Post> pss = postRepository.findAll();
+    Post p = pss.get(0);
+      pinnedPostRepo.save(new PinnedPost(p, p.getUser()));
+      log.info("For user " + p.getUser().getUsername() + " Post: " + p.getId());
+      log.info("pinnedPostRepo " + pinnedPostRepo.findAll());
+
   }
 
   private Post createPost(Post.Privacy privacy, User user, Location location, String text) {
