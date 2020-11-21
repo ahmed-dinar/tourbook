@@ -79,7 +79,7 @@ public class StartupCommandRunner implements CommandLineRunner {
   }
 
   @Transactional
-  private void insertPost(List<User> users) {
+  void insertPost(List<User> users) {
     Stream
         .of("Sylhet", "Bandarban", "Hardhome", "Gotham", "Winterfell", "CentralPark", "Rivia", "CastleBlack", "KingsLanding")
         .forEach(location -> locationRepository.save(new Location(location, 60.0, 6.0)));

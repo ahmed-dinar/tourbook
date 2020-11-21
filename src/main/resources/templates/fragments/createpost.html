@@ -1,5 +1,5 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="createpost">
-    <div class="card mb-4 create-post">
+    <div sec:authorize="isAuthenticated()" class="card mb-4 create-post">
         <form method="POST" th:action="@{/posts}">
             <div class="mb-3 d-flex flex-row">
                 <div class="editor-image">

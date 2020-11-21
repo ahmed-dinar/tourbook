@@ -63,10 +63,11 @@ public class PostService {
         .filter(s -> isSameUser || s.equals(Post.Privacy.PUBLIC))
         .collect(Collectors.toList());
     Pageable pageable = pageHelper.getPageable(page, size);
+    Long pinnedId = pinnedPost.map(p -> p.getPost().getId()).orElse((long) -1);
 
     Page<Post> posts = postRepo.findByUser_IdAndIdNotAndPrivacyInOrderByCreatedAtDesc(
         user.getId(),
-        pinnedPost.map(PinnedPost::getId).orElse((long) -1),
+        pinnedId,
         postPrivacy,
         pageable
     );
@@ -104,8 +105,11 @@ public class PostService {
     if (postOptional.isEmpty()) {
       throw new NotFoundException("Post not found");
     }
+    Post post = postOptional.get();
+    System.out.println("user1 " + post.getUser().getId());
+    System.out.println("user " + user.getId());
 
-    Post post = postOptional.get();if(!post.getUser().getId().equals(user.getId())) {
+    if(!post.getUser().getId().equals(user.getId())) {
       throw new AccessDeniedException("Access Denied man!");
     }
 

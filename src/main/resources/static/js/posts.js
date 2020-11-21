@@ -5,7 +5,7 @@ jQuery().ready(function(){
 });
 
 function pinPost() {
-  const postId = $(this).parent().attr("postid");
+  const postId = $(this).closest('.postid-holder').attr("postid");
   $.ajax({
     type: "post",
     data: "",
@@ -21,7 +21,7 @@ function pinPost() {
 }
 
 function unpinPost() {
-  const postId = $(this).parent().attr("postid");
+  const postId = $(this).closest('.postid-holder').attr("postid");
   $.ajax({
     type: "post",
     data: "",
@@ -37,7 +37,7 @@ function unpinPost() {
 }
 
 function deletePost() {
-  const postId = $(this).parent().attr("postid");
+  const postId = $(this).closest('.postid-holder').attr("postid");
   $.ajax({
     type: "delete",
     url: `/posts/${postId}`,

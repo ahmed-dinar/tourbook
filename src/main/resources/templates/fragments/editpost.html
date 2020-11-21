@@ -2,17 +2,26 @@
     <div data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer">
         <img th:src="@{/images/more-vertical.svg}" width="14px" />
     </div>
-    <div class="dropdown-menu dropdown-menu-right animate__animated animate__fadeIn" th:attr="postid=${post.getId()}">
-        <button class="dropdown-item pin-post" type="button">
-            <img width="20px" th:src="@{/images/bookmark.svg}"/> Pin Post
-        </button>
-        <div class="dropdown-divider"></div>
+    <div
+            class="dropdown-menu dropdown-menu-right postid-holder"
+            th:attr="postid=${post.getId()}"
+    >
+        <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().getUser().getId() == post.getUser().getId()}">
+            <button  class="dropdown-item pin-post" type="button">
+                <img width="20px" th:src="@{/images/bookmark.svg}"/> Pin Post
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item modify-post" type="button">
+                <img width="20px" th:src="@{/images/edit-3.svg}"/> Edit Post
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item delete-post" type="button">
+                <img width="20px" th:src="@{/images/trash.svg}"/> Delete Post
+            </button>
+            <div class="dropdown-divider"></div>
+        </div>
         <button class="dropdown-item" type="button">
-            <img width="20px" th:src="@{/images/edit-3.svg}"/> Edit Post
-        </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item delete-post" type="button">
-            <img width="20px" th:src="@{/images/trash.svg}"/> Delete Post
+            <img width="20px" th:src="@{/images/trash.svg}"/> Report
         </button>
     </div>
 </th:block>
@@ -23,7 +32,7 @@
         <img th:src="@{/images/bookmark.svg}" width="14px" class="mr-1" />
         <img th:src="@{/images/more-vertical.svg}" width="14px" />
     </div>
-    <div class="dropdown-menu dropdown-menu-right animate__animated animate__fadeIn" th:attr="postid=${pinnedPost.getPost().getId()}">
+    <div class="dropdown-menu dropdown-menu-right postid-holder" th:attr="postid=${pinnedPost.getPost().getId()}">
         <button class="dropdown-item unpin-post" type="button">
             <img width="20px" th:src="@{/images/bookmark.svg}"/> Unpin Post
         </button>

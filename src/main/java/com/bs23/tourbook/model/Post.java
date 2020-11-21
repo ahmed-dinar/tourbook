@@ -5,11 +5,7 @@ import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Entity
@@ -29,25 +25,19 @@ public class Post extends BaseEntity {
   @Length(max = 1000)
   private String text;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne
   @NonNull
   private User user;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne
   @NonNull
   private Location location;
 
   /**
-   * This is EAGER For now, need to show likes & user images in posts page
-   * May be moved to Ajax for images & User @Formula just to return counts?
+   * May be use @OneToMany & FetchType.LAZY? Not sure about performance yet
    */
-  @OneToMany(
-      fetch = FetchType.EAGER,
-      mappedBy = "post",
-      orphanRemoval = true
-  )
-  @OnDelete(action = OnDeleteAction.CASCADE)
-  private Set<PostLike> likes = new HashSet<>();
+  @Formula("SELECT COUNT(pl.id) FROM post_like pl WHERE pl.post_id = id")
+  private Long likes;
 
   /**
    * May be use @OneToMany & FetchType.LAZY? Not sure about performance yet

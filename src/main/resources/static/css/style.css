@@ -11,15 +11,59 @@ body, html {
 }
 
 .bg-nav {
-    background-color: #3f4257;
+    background-color: #fff;
 }
 
 .main-container {
-    padding-top: 30px;
+    padding-top: 65px;
 }
 
 .navbar {
-    padding: 4px 1rem;
+    padding: 10px 6rem;
+    box-shadow: inset 0 -1px #d1d1d1;
+}
+
+.cover-photo {
+    height: 300px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    padding-left: 30px;
+}
+
+.cover-photo .profile-image img {
+    border-radius: 50%;
+    width: 170px;
+    border: 3px solid #fff;
+}
+
+.profile-name h3 {
+    text-shadow: -2px 0 white, 0 3px white, 3px 0 white, 0 -3px white;
+    color: #212121;
+    letter-spacing: 1px;
+}
+
+.navbar-dark .navbar-brand {
+    color: #1769aa;
+}
+
+.navbar-dark .navbar-brand:hover {
+    color: #ddd;
+}
+
+.nav-login .form-control {
+    padding: 2px 5px;
+    font-size: 12px;
+    line-height: 1;
+    /*border: 1px solid #343a40;*/
+    border: none;
+    background-color: #eee;
+}
+
+.nav-user {
+    color: #212121;
+    font-size: 14px;
 }
 
 .navbar-collapse ul {
@@ -32,12 +76,6 @@ body, html {
     border-radius: 2px;
 }
 
-.navbar-collapse .form-control-sm {
-    padding: 2px 5px;
-    font-size: 12px;
-    line-height: 1;
-    border: none;
-}
 
 .card {
     border: none;

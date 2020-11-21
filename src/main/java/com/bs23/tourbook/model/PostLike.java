@@ -19,7 +19,7 @@ public class PostLike extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @NonNull
   private final User user;
 
@@ -34,7 +34,7 @@ public class PostLike extends BaseEntity {
    * https://stackoverflow.com/a/61717052
    *
    */
-  @ManyToOne
+  @ManyToOne(targetEntity = Post.class)
   @JoinColumn(name = "post_id", referencedColumnName = "id")
   @Getter(AccessLevel.NONE)
   @ToString.Exclude
