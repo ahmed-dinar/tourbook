@@ -5,15 +5,13 @@
 package com.bs23.tourbook.service;
 
 import com.bs23.tourbook.data.PinnedPostRepository;
+import com.bs23.tourbook.data.PostCommentRepository;
 import com.bs23.tourbook.data.PostRepository;
 import com.bs23.tourbook.helper.PageHelper;
 import com.bs23.tourbook.helper.Pair;
-import com.bs23.tourbook.model.PinnedPost;
-import com.bs23.tourbook.model.Post;
-import com.bs23.tourbook.model.User;
-import com.bs23.tourbook.model.UserPrincipal;
+import com.bs23.tourbook.model.*;
 import javassist.NotFoundException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -34,11 +32,13 @@ public class PostService {
   private final PageHelper pageHelper;
   private final PostRepository postRepo;
   private final PinnedPostRepository pinnedPostRepo;
+  private final PostCommentRepository postCommentRepo;
 
-  public PostService(PageHelper pageHelper, PostRepository postRepo, PinnedPostRepository pinnedPostRepo) {
+  public PostService(PageHelper pageHelper, PostRepository postRepo, PinnedPostRepository pinnedPostRepo, PostCommentRepository postCommentRepo) {
     this.pageHelper = pageHelper;
     this.postRepo = postRepo;
     this.pinnedPostRepo = pinnedPostRepo;
+    this.postCommentRepo = postCommentRepo;
   }
 
   /**
@@ -105,10 +105,8 @@ public class PostService {
     if (postOptional.isEmpty()) {
       throw new NotFoundException("Post not found");
     }
-    Post post = postOptional.get();
-    System.out.println("user1 " + post.getUser().getId());
-    System.out.println("user " + user.getId());
 
+    Post post = postOptional.get();
     if(!post.getUser().getId().equals(user.getId())) {
       throw new AccessDeniedException("Access Denied man!");
     }
@@ -148,7 +146,7 @@ public class PostService {
 
     Post post = postOptional.get();
     if(!post.getUser().getId().equals(user.getId())) {
-      throw new AccessDeniedException("Access Denied man!");
+      throw new AccessDeniedException("Access Denied!");
     }
 
     postRepo.deleteById(postId);
@@ -170,9 +168,63 @@ public class PostService {
     }
 
     if(!postOptional.get().getPost().getUser().getId().equals(user.getId())) {
-      throw new AccessDeniedException("Access Denied man!");
+      throw new AccessDeniedException("Access Denied!");
     }
 
     pinnedPostRepo.deleteByPost_Id(postId);
+  }
+
+
+  /**
+   *
+   * @param postForm
+   * @param user
+   * @throws AccessDeniedException
+   * @throws NotFoundException
+   */
+  @Transactional
+  public void updatePost(PostForm postForm, User user) throws AccessDeniedException, NotFoundException {
+    Optional<Post> postOptional = postRepo.findById(postForm.getId());
+
+    if (postOptional.isEmpty()) {
+      throw new NotFoundException("Post not found");
+    }
+
+    if(!postOptional.get().getUser().getId().equals(user.getId())) {
+      throw new AccessDeniedException("Access Denied!");
+    }
+
+    Post post = postOptional.get();
+    post.setPrivacy(Post.Privacy.valueOf(postForm.getPrivacy()));
+    post.setLocation(postForm.getLocation());
+    Optional.ofNullable(postForm.getText()).ifPresent(post::setText);
+
+    postRepo.save(post);
+  }
+
+  /**
+   *
+   * @param postId
+   * @return
+   * @throws NotFoundException
+   */
+  public Post postDetail(Long postId) throws NotFoundException {
+    return postRepo.findById(postId).orElseThrow(() -> new NotFoundException("Post not found"));
+  }
+
+  /**
+   *
+   * @param postId
+   * @param page
+   * @param size
+   * @return
+   */
+  public Page<PostComment> comments(
+      Long postId,
+      Optional<Integer> page,
+      Optional<Integer> size
+  ) {
+    Pageable pageable = pageHelper.getPageable(page, size);
+    return postCommentRepo.findByPost_IdOrderByCreatedAtDesc(postId, pageable);
   }
 }

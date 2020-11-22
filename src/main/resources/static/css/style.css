@@ -116,6 +116,14 @@ body, html {
     width: 13px;
 }
 
+.post-date a {
+    text-decoration: none;
+}
+
+.post-date a:hover {
+    text-decoration: underline !important;
+}
+
 .post-card .post-location {
     font-size: 13px;
 }
@@ -174,4 +182,8 @@ body, html {
 .edit-post .dropdown-item {
     padding: 3px 7px;
     font-size: 13px;
+}
+
+.modal-backdrop {
+    z-index: -1;
 }

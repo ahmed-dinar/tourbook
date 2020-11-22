@@ -5,6 +5,7 @@
     <div th:replace="fragments/navbar :: navigation"></div>
 
 
+
     <div class="container-fluid main-container">
         <div class="row">
             <div class="container">
@@ -22,7 +23,16 @@
 
                     <!-- middle column posts -->
                     <div class="p-10 w-50 bd-highlight">
-                        <th:block th:replace="fragments/posts :: postcontents"/>
+                        <div
+                                sec:authorize="isAuthenticated()"
+                                class="card mb-4 create-post"
+                        >
+                            <form method="POST" th:action="@{/posts}">
+                                <th:block th:replace="fragments/createpost :: postform"/></th:block>
+                            </form>
+                        </div>
+                        <th:block th:replace="fragments/postlist :: postlist"/>
+                        <th:block th:replace="fragments/pagination :: pagination"/>
                     </div>
 
                     <!-- right sidebar suggestions -->

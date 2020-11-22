@@ -2,6 +2,14 @@ jQuery().ready(function(){
     $('.edit-post .pin-post').click(pinPost);
     $('.edit-post .unpin-post').click(unpinPost);
     $('.edit-post .delete-post').click(deletePost);
+
+    // $('#edit-modal').modal({
+    //   keyboard: false
+    // });
+
+    $('.edit-post .modify-post').click(function (){
+      $('#edit-modal').modal('toggle');
+    });
 });
 
 function pinPost() {

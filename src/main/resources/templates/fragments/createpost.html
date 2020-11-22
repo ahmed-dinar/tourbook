@@ -1,47 +1,43 @@
-<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="createpost">
-    <div sec:authorize="isAuthenticated()" class="card mb-4 create-post">
-        <form method="POST" th:action="@{/posts}">
-            <div class="mb-3 d-flex flex-row">
-                <div class="editor-image">
-                    <img th:src="@{/images/img_avatar.png}"/>
-                </div>
-                <textarea class="form-control w-100 noselect" name="text" placeholder="Share your experience!"></textarea>
-            </div>
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postform">
+    <div class="mb-3 d-flex flex-row">
+        <div class="editor-image">
+            <img th:src="@{/images/img_avatar.png}"/>
+        </div>
+        <textarea class="form-control w-100 noselect" name="text" placeholder="Share your experience!"></textarea>
+    </div>
 
-            <div class="mb-3 d-flex flex-row">
-                <div class="input-group is-invalid pl-2 pr-1 w-60">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="validatedInputGroupSelect">
-                            <img th:src="@{/images/map-pin.svg}"/>
-                        </label>
-                    </div>
-                    <select class="custom-select" id="validatedInputGroupSelect" name="location" required>
-                        <option value="">Select place..</option>
-                        <option
-                                th:each="location: ${locations}"
-                                th:value="${location.getId()}"
-                                th:text="${location.getName().replaceAll('([A-Z][a-z]+)', ' $1').trim()}"
-                        ></option>
-                    </select>
-                </div>
-
-                <div class="input-group is-invalid pl-1 pr-2 w-30">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="validatedInputGroupPrivacySelect">
-                            <img th:src="@{/images/lock.svg}"/>
-                        </label>
-                    </div>
-                    <select class="custom-select" id="validatedInputGroupPrivacySelect" name="privacy" required>
-                        <option
-                                th:each="privacy: ${privacyList}"
-                                th:value="${privacy}"
-                                th:selected="${privacy == 'PUBLIC'}"
-                                th:text="${privacy}"
-                        ></option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-sm btn-primary mr-3 w-10" >Publish</button>
+    <div class="mb-3 d-flex flex-row">
+        <div class="input-group is-invalid pl-2 pr-1 w-60">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="validatedInputGroupSelect">
+                    <img th:src="@{/images/map-pin.svg}"/>
+                </label>
             </div>
-        </form>
+            <select class="custom-select" id="validatedInputGroupSelect" name="location" required>
+                <option value="">Select place..</option>
+                <option
+                        th:each="location: ${locations}"
+                        th:value="${location.getId()}"
+                        th:text="${location.getName().replaceAll('([A-Z][a-z]+)', ' $1').trim()}"
+                ></option>
+            </select>
+        </div>
+
+        <div class="input-group is-invalid pl-1 pr-2 w-30">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="validatedInputGroupPrivacySelect">
+                    <img th:src="@{/images/lock.svg}"/>
+                </label>
+            </div>
+            <select class="custom-select" id="validatedInputGroupPrivacySelect" name="privacy" required>
+                <option
+                        th:each="privacy: ${privacyList}"
+                        th:value="${privacy}"
+                        th:selected="${privacy == 'PUBLIC'}"
+                        th:text="${privacy}"
+                ></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary mr-3 w-10" >Publish</button>
     </div>
 </th:block>
