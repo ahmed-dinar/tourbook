@@ -10,7 +10,6 @@ import com.github.javafaker.Faker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -78,7 +77,7 @@ public class StartupCommandRunner implements CommandLineRunner {
         createUser("totoro", password, null, "Neighbor Totoro", null, userRole)
     ));
 
-    this.insertPost(userRepository.findAll());
+    this.insertPost(userRepository.findAllByRolesName(userRole.getName()));
   }
 
   @Transactional

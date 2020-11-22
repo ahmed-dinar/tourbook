@@ -5,16 +5,12 @@
 package com.bs23.tourbook.controller;
 
 import com.bs23.tourbook.data.LocationRepository;
-import com.bs23.tourbook.data.PinnedPostRepository;
-import com.bs23.tourbook.data.PostRepository;
 import com.bs23.tourbook.data.UserRepository;
 import com.bs23.tourbook.helper.Pair;
 import com.bs23.tourbook.model.*;
 import com.bs23.tourbook.service.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
