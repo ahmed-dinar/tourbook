@@ -2,15 +2,47 @@ jQuery().ready(function(){
     $('.edit-post .pin-post').click(pinPost);
     $('.edit-post .unpin-post').click(unpinPost);
     $('.edit-post .delete-post').click(deletePost);
+    $('.edit-post .modify-post').click(function () {
+      const postId = $(this).closest('.postid-holder').attr("postid");
+      const locationId = $(this).closest('.post-info').find('span.location-info').first().attr("locationid");
+      const privacy = $(this).closest('.post-info').find('span.privacy-info').first().attr("privacy");
+      const text = $(this).closest('.post-info').find('p.post-text').first().text();
 
-    // $('#edit-modal').modal({
-    //   keyboard: false
-    // });
+      $('#edit-post-form input[name="postid"]').val(postId);
+      $('#edit-post-form textarea[name="text"]').val(text.trim());
+      $('#edit-post-form select[name="privacy"] option[value='+ privacy +']').attr('selected','selected');
+      $('#edit-post-form select[name="location"] option[value='+ locationId +']').attr('selected','selected');
 
-    $('.edit-post .modify-post').click(function (){
       $('#edit-modal').modal('toggle');
     });
+
+    $('#edit-post-form').submit(editPost);
 });
+
+function editPost(e) {
+    e.preventDefault();
+
+    const postId = $('#edit-post-form input[name="postid"]').val();
+    const formData = {
+      text: $('#edit-post-form textarea[name="text"]').val() || '',
+      privacy: $('#edit-post-form select[name="privacy"]').find('option:selected').val(),
+      location: $('#edit-post-form select[name="location"]').find('option:selected').val()
+    };
+
+    $.ajax({
+      type: "put",
+      data: formData,
+      url: `/posts/${postId}`,
+      dataType: "json",
+      success: function(result){
+        console.log("result ", result);
+        showSuccess("Post Updated!");
+        $('#edit-modal').modal('toggle');
+        location.reload();
+      },
+      error: handleError
+    });
+}
 
 function pinPost() {
   const postId = $(this).closest('.postid-holder').attr("postid");
@@ -18,7 +50,7 @@ function pinPost() {
     type: "post",
     data: "",
     url: `/posts/${postId}/pin`,
-    dataType: "json",
+    dataType: "",
     success: function(result){
       console.log("result ", result);
       showSuccess("Post Pinned!");
@@ -34,7 +66,7 @@ function unpinPost() {
     type: "post",
     data: "",
     url: `/posts/${postId}/unpin`,
-    dataType: "json",
+    dataType: "",
     success: function(result){
       console.log("result ", result);
       showSuccess('Post UnPinned!');
@@ -49,7 +81,7 @@ function deletePost() {
   $.ajax({
     type: "delete",
     url: `/posts/${postId}`,
-    dataType: "json",
+    dataType: "",
     success: function(result){
       console.log("result ", result);
       showSuccess('Post Removed!');
@@ -71,10 +103,9 @@ function showSuccess(title) {
   });
 }
 
-function handleError(xhr, textStatus,error) {
+function handleError(xhr, textStatus, error) {
   console.log("An error occured: " + xhr.status + " " + xhr.statusText);
   console.log(xhr);
-  console.log(error);
 
   Swal.fire({
     toast: true,
@@ -83,8 +114,10 @@ function handleError(xhr, textStatus,error) {
     timer: 3000,
     timerProgressBar: false,
     icon: 'error',
-    title: xhr.status === 403
-      ? 'Access Denied!'
-      :  `${xhr.status}`
+    title: xhr.responseText
+      ? xhr.responseText
+      : xhr.status === 403
+        ? 'Access Denied!'
+        :  `${xhr.status} - No detail Message Found!`
   });
 }

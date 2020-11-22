@@ -16,13 +16,16 @@ public class Location extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
+  @Column(nullable = false)
+  private boolean visible = true;
+
   @Column(nullable = false, unique = true)
   @NonNull
-  private final String name;
+  private String name;
 
   @Column(nullable = true)
-  private final double latitude;
+  private final double latitude = 6.6;
 
   @Column(nullable = true)
-  private final double longitude;
+  private final double longitude = 6.6;
 }
