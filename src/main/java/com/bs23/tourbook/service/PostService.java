@@ -11,7 +11,6 @@ import com.bs23.tourbook.helper.PageHelper;
 import com.bs23.tourbook.helper.Pair;
 import com.bs23.tourbook.model.*;
 import javassist.NotFoundException;
-import lombok.extern.java.Log;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +43,17 @@ public class PostService {
 
   /**
    *
+   * @param postForm
+   * @param user
+   */
+  public void addPost(PostForm postForm, User user) {
+    Post post = new Post(Post.Privacy.valueOf(postForm.getPrivacy()), user, postForm.getLocation());
+    Optional.ofNullable(postForm.getText()).ifPresent(post::setText);
+    postRepo.save(post);
+  }
+
+  /**
+   *
    * @param page
    * @param size
    * @param userPrincipal
@@ -56,22 +67,20 @@ public class PostService {
       User user
   ) {
     Optional<PinnedPost> pinnedPost = pinnedPostRepo.findByUser_Id(user.getId());
-
-    boolean isSameUser = userPrincipal != null && userPrincipal.getUser().getUsername().equals(user.getUsername());
-    Collection<Post.Privacy> postPrivacy = Stream
-        .of(Post.Privacy.PUBLIC, Post.Privacy.PRIVATE)
-        .filter(s -> isSameUser || s.equals(Post.Privacy.PUBLIC))
-        .collect(Collectors.toList());
-    Pageable pageable = pageHelper.getPageable(page, size);
     Long pinnedId = pinnedPost.map(p -> p.getPost().getId()).orElse((long) -1);
 
+    boolean isSameUser = isSameLoggedUser(userPrincipal, user);
+    Collection<Post.Privacy> postPrivacy = Stream.of(Post.Privacy.PUBLIC, Post.Privacy.PRIVATE)
+        .filter(s -> isSameUser || s.equals(Post.Privacy.PUBLIC))
+        .collect(Collectors.toList());
+
+    Pageable pageable = pageHelper.getPageable(page, size);
     Page<Post> posts = postRepo.findByUser_IdAndIdNotAndPrivacyInOrderByCreatedAtDesc(
         user.getId(),
         pinnedId,
         postPrivacy,
         pageable
     );
-
     return Pair.of(pinnedPost, posts);
   }
 
@@ -116,17 +125,17 @@ public class PostService {
     }
 
     Optional<PinnedPost> pinnedPost = pinnedPostRepo.findByUser_Id(user.getId());
-    pinnedPost.ifPresentOrElse(
-        p -> {
-          p.setPost(post);
-          pinnedPostRepo.save(p);
-        },
-        () -> {
-          PinnedPost savePost = new PinnedPost();
-          savePost.setPost(post);
-          savePost.setUser(user);
-          pinnedPostRepo.save(savePost);
-        });
+    Consumer<PinnedPost> updateExisting = p -> {
+      p.setPost(post);
+      pinnedPostRepo.save(p);
+    };
+
+    pinnedPost.ifPresentOrElse(updateExisting, () -> {
+      PinnedPost savePost = new PinnedPost();
+      savePost.setPost(post);
+      savePost.setUser(user);
+      pinnedPostRepo.save(savePost);
+    });
   }
 
   /**
@@ -198,7 +207,6 @@ public class PostService {
     post.setPrivacy(Post.Privacy.valueOf(postForm.getPrivacy()));
     post.setLocation(postForm.getLocation());
     Optional.ofNullable(postForm.getText()).ifPresent(post::setText);
-
     postRepo.save(post);
   }
 
@@ -226,5 +234,15 @@ public class PostService {
   ) {
     Pageable pageable = pageHelper.getPageable(page, size);
     return postCommentRepo.findByPost_IdOrderByCreatedAtDesc(postId, pageable);
+  }
+
+  /**
+   *
+   * @param userPrincipal
+   * @param user
+   * @return
+   */
+  private boolean isSameLoggedUser(UserPrincipal userPrincipal, User user) {
+    return userPrincipal != null && userPrincipal.getUser().getUsername().equals(user.getUsername());
   }
 }

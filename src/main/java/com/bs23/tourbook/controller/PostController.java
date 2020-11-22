@@ -1,13 +1,11 @@
 package com.bs23.tourbook.controller;
 
 import com.bs23.tourbook.data.PostLikeRepository;
-import com.bs23.tourbook.data.PostRepository;
 import com.bs23.tourbook.model.*;
 import com.bs23.tourbook.service.PostService;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+
 
 @Slf4j
 @Controller
@@ -30,24 +28,22 @@ public class PostController {
 
   private final PostLikeRepository postLikeRepo;
   private final PostService postService;
-  private final PostRepository postRepo;
 
-  public PostController(PostLikeRepository postLikeRepo, PostService postService, PostRepository postRepo) {
+  public PostController(PostLikeRepository postLikeRepo, PostService postService) {
     this.postLikeRepo = postLikeRepo;
     this.postService = postService;
-    this.postRepo = postRepo;
   }
 
   @PostMapping
-  public String processPost(@Valid PostForm postForm, BindingResult result, @AuthenticationPrincipal UserPrincipal user) {
+  public String processPost(
+      @Valid PostForm postForm,
+      BindingResult result,
+      @AuthenticationPrincipal UserPrincipal userPrincipal
+  ) {
     if (result.hasErrors()) {
       return "redirect:/posts";
     }
-
-    Post post = new Post(Post.Privacy.valueOf(postForm.getPrivacy()), user.getUser(), postForm.getLocation());
-    Optional.ofNullable(postForm.getText()).ifPresent(post::setText);
-    postRepo.save(post);
-
+    postService.addPost(postForm, userPrincipal.getUser());
     return "redirect:/";
   }
 
@@ -109,7 +105,6 @@ public class PostController {
     if (result.hasErrors()) {
       return  ResponseEntity.badRequest().body(postForm);
     }
-
     postForm.setId(postId);
     postService.updatePost(postForm, userPrincipal.getUser());
     return ResponseEntity.ok().body(postForm);
