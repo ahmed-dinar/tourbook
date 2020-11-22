@@ -30,7 +30,18 @@
                     </div>
                     <!-- middle column posts -->
                     <div class="p-10 flex-grow-1 bd-highlight">
-                        <th:block th:replace="fragments/posts :: postcontents"/>
+                        <div
+                                sec:authorize="isAuthenticated()"
+                                class="card mb-4 create-post"
+                                th:if="${#strings.contains(#httpServletRequest.requestURI, #authentication.getPrincipal().getUser().getUsername())}"
+                        >
+                            <form method="POST" th:action="@{/posts}">
+                                <th:block th:replace="fragments/createpost :: postform"/>
+                            </form>
+                        </div>
+                        <th:block th:replace="fragments/pinnedpost :: pinnedpost"/>
+                        <th:block th:replace="fragments/postlist :: postlist"/>
+                        <th:block th:replace="fragments/pagination :: pagination"/>
                     </div>
                 </div>
             </div>

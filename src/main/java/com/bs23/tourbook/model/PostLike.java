@@ -29,8 +29,8 @@ public class PostLike extends BaseEntity {
    * Causing biodirectional loop in ManyToOne & OneToMany in Post
    * EqualsAndHashCode works
    * ToString.Exclude suggested
-   * JsonIgnoreProperties suggested
-   * Getter(AccessLevel.NONE)
+   * JsonIgnoreProperties works
+   * Getter(AccessLevel.NONE) suggested
    * https://stackoverflow.com/a/61717052
    *
    */

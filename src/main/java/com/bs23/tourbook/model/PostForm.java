@@ -8,6 +8,8 @@ import javax.validation.constraints.Size;
 
 @Data
 public class PostForm {
+  private Long id;
+
   @Size(max = 1000, message = "Status should be max 1000 characters long")
   private String text;
 

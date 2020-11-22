@@ -72,7 +72,9 @@ public class StartupCommandRunner implements CommandLineRunner {
         createUser("shelby", password, null, "Thomas Shelby", null, userRole),
         createUser("raven", password, null, "Three eyed raven ", null, userRole),
         createUser("hodor", password, null, "Hodor", null, userRole),
-        createUser("monica", password, null, "Monica Geller", null, userRole)
+        createUser("monica", password, null, "Monica Geller", null, userRole),
+        createUser("joey", password, null, "Joey Tribbiani", null, userRole),
+        createUser("totoro", password, null, "Neighbor Totoro", null, userRole)
     ));
 
     this.insertPost(userRepository.findAll());
@@ -81,17 +83,18 @@ public class StartupCommandRunner implements CommandLineRunner {
   @Transactional
   void insertPost(List<User> users) {
     Stream
-        .of("Sylhet", "Bandarban", "Hardhome", "Gotham", "Winterfell", "CentralPark", "Rivia", "CastleBlack", "KingsLanding")
+        .of("Sylhet", "Bandarban", "Hardhome", "Gotham", "Winterfell", "CoxBazar", "Sreemangal",
+            "Saintmartin", "CentralPark", "Rivia", "CastleBlack", "KingsLanding", "HighGarden")
         .forEach(location -> locationRepository.save(new Location(location, 60.0, 6.0)));
 
     List<Location> savedLocations = locationRepository.findAll();
     Random rand = new Random();
 
     IntStream
-        .range(1, 23)
+        .range(1, 53)
         .forEach(x -> {
-          // 17 post entries will be public out of 23
-          Post.Privacy privacy = x < 18 ? Post.Privacy.PUBLIC : Post.Privacy.PRIVATE;
+          // 46 post entries will be public out of 53
+          Post.Privacy privacy = x < 47 ? Post.Privacy.PUBLIC : Post.Privacy.PRIVATE;
           // select a random user as post owner
           User user = users.get(rand.nextInt(users.size()));
           // select a random location
@@ -102,10 +105,12 @@ public class StartupCommandRunner implements CommandLineRunner {
           // if divided by 3 then no post description
           // otherwise select random sentence as post text :D
           String text = x%2 == 0
-              ? faker.weather().description()
+              ? x%4 == 0
+                ? faker.weather().description() + " and " + faker.weather().description() + "!"
+                : faker.weather().description() + "!!"
               :  x%3 == 0
                     ? null
-                    : faker.lorem().paragraph(rand.nextInt(7) + 3);
+                    : faker.lorem().paragraph(rand.nextInt(10) + 5);
 
           postRepository.save(createPost(privacy, user, location, text));
         });
@@ -133,7 +138,6 @@ public class StartupCommandRunner implements CommandLineRunner {
       pinnedPostRepo.save(new PinnedPost(p, p.getUser()));
       log.info("For user " + p.getUser().getUsername() + " Post: " + p.getId());
       log.info("pinnedPostRepo " + pinnedPostRepo.findAll());
-
   }
 
   private Post createPost(Post.Privacy privacy, User user, Location location, String text) {
