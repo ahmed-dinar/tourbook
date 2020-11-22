@@ -36,12 +36,14 @@
                                 th:if="${#strings.contains(#httpServletRequest.requestURI, #authentication.getPrincipal().getUser().getUsername())}"
                         >
                             <form method="POST" th:action="@{/posts}">
-                                <th:block th:replace="fragments/createpost :: postform"/>
+                                <th:block th:replace="fragments/createpost :: postform (isEdit = false)"/>
                             </form>
                         </div>
                         <th:block th:replace="fragments/pinnedpost :: pinnedpost"/>
                         <th:block th:replace="fragments/postlist :: postlist"/>
                         <th:block th:replace="fragments/pagination :: pagination"/>
+
+                        <th:block th:replace="fragments/editpost :: editmodal"/></th:block>
                     </div>
                 </div>
             </div>

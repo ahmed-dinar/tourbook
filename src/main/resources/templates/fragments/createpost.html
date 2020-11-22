@@ -1,35 +1,37 @@
-<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postform">
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postform (isEdit)">
     <div class="mb-3 d-flex flex-row">
         <div class="editor-image">
             <img th:src="@{/images/img_avatar.png}"/>
         </div>
+        <input th:if="${isEdit == true}" name="postid" type="hidden" value="" />
         <textarea class="form-control w-100 noselect" name="text" placeholder="Share your experience!"></textarea>
     </div>
 
     <div class="mb-3 d-flex flex-row">
         <div class="input-group is-invalid pl-2 pr-1 w-60">
             <div class="input-group-prepend">
-                <label class="input-group-text" for="validatedInputGroupSelect">
+                <label class="input-group-text">
                     <img th:src="@{/images/map-pin.svg}"/>
                 </label>
             </div>
-            <select class="custom-select" id="validatedInputGroupSelect" name="location" required>
+            <select class="custom-select" name="location" required>
                 <option value="">Select place..</option>
                 <option
                         th:each="location: ${locations}"
                         th:value="${location.getId()}"
                         th:text="${location.getName().replaceAll('([A-Z][a-z]+)', ' $1').trim()}"
+                        th:attr="locationId=${location.getId()}"
                 ></option>
             </select>
         </div>
 
         <div class="input-group is-invalid pl-1 pr-2 w-30">
             <div class="input-group-prepend">
-                <label class="input-group-text" for="validatedInputGroupPrivacySelect">
+                <label class="input-group-text" >
                     <img th:src="@{/images/lock.svg}"/>
                 </label>
             </div>
-            <select class="custom-select" id="validatedInputGroupPrivacySelect" name="privacy" required>
+            <select class="custom-select"  name="privacy" required>
                 <option
                         th:each="privacy: ${privacyList}"
                         th:value="${privacy}"

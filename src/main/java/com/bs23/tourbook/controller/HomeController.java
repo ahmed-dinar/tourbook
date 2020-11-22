@@ -41,7 +41,7 @@ public class HomeController {
       @AuthenticationPrincipal UserPrincipal userPrincipal
   ) {
     Page<Post> posts = postService.getPublicPosts(page, size, userPrincipal);
-    List<Location> locations = locationRepo.findAll();
+    List<Location> locations = locationRepo.findAllByVisibleNot(false);
 
     model.addAttribute("posts", posts);
     model.addAttribute("locations", locations);

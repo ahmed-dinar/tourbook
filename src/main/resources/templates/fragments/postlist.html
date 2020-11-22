@@ -8,7 +8,7 @@
 
 
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postdetail">
-    <div class="card-body">
+    <div class="card-body post-info">
         <div class="d-flex flex-row justify-content-between mb-3">
             <div class="left-post d-flex flex-row">
                 <a th:href="@{'/users/' + ${post.getUser().getUsername()}}">
@@ -20,17 +20,23 @@
                     <a th:href="@{'/users/' + ${post.getUser().getUsername()}}" class="card-title">
                         [[${post.getUser().getFullName()}]]
                     </a>
-                    <span class="card-subtitle post-location ml-2">
-                            <img th:src="@{/images/map-pin.svg}"/>
-                            <a href="#">
-                                is in <strong>[[${post.getLocation().getName()}]]</strong>
-                            </a>
-                        </span>
+                    <span
+                        class="card-subtitle post-location ml-2 location-info"
+                        th:attr="locationId=${post.getLocation().getId()}"
+                    >
+                        <img th:src="@{/images/map-pin.svg}"/>
+                        <a href="#">
+                            is in <strong>[[${post.getLocation().getName()}]]</strong>
+                        </a>
+                    </span>
                     <h6 class="card-subtitle post-date text-muted">
                         <a th:href="@{'/posts/' + ${post.getId()}}">
                             <small>[[${#dates.format(post.getCreatedAt(), "MMMM d 'at' hh:mm a")}]]</small>
                         </a>
-                        <span class="ml-2">
+                        <span
+                                class="ml-2 privacy-info"
+                                th:attr="privacy=${post.getPrivacy()}"
+                        >
                             <small><img th:src="${(post.getPrivacy() == T(com.bs23.tourbook.model.Post.Privacy).PUBLIC) ? '/images/globe.svg' : '/images/locked.svg'}" /></small>
                         </span>
                     </h6>
@@ -41,7 +47,10 @@
             </div>
         </div>
 
-        <p class="card-text" th:if="${post.getText() != null}">
+        <p
+                class="card-text post-text"
+                th:if="${post.getText() != null}"
+        >
             [[${post.getText()}]]
         </p>
     </div>
@@ -61,6 +70,4 @@
             </a>
         </div>
     </div>
-
-    <th:block th:replace="fragments/editpost :: editmodal"/></th:block>
 </th:block>

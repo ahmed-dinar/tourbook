@@ -64,6 +64,7 @@ public class StartupCommandRunner implements CommandLineRunner {
     String password = encoder.encode("1111");
 
     userRepository.saveAll(Arrays.asList(
+        createUser("admin", encoder.encode("admin"), null, "Super Admin", null, adminRole),
         createUser("jonsnow", password, null, "Aegon Targaryen", null, userRole),
         createUser("khaleesi", password, "dragon@kingslanding.burn", "Daenerys Targaryen", "0171111111", adminRole),
         createUser("sarcasm", password, null, "Chandler Muriel Bing", null, userRole),
@@ -85,7 +86,7 @@ public class StartupCommandRunner implements CommandLineRunner {
     Stream
         .of("Sylhet", "Bandarban", "Hardhome", "Gotham", "Winterfell", "CoxBazar", "Sreemangal",
             "Saintmartin", "CentralPark", "Rivia", "CastleBlack", "KingsLanding", "HighGarden")
-        .forEach(location -> locationRepository.save(new Location(location, 60.0, 6.0)));
+        .forEach(location -> locationRepository.save(new Location(location)));
 
     List<Location> savedLocations = locationRepository.findAll();
     Random rand = new Random();

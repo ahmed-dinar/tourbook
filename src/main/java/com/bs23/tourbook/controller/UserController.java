@@ -56,7 +56,7 @@ public class UserController {
         .orElseThrow(() -> new UsernameNotFoundException("No user found"));
 
     Pair<Optional<PinnedPost>, Page<Post>> userPosts = postService.getUserPosts(page, size, userPrincipal, user);
-    List<Location> locations = locationRepo.findAll();
+    List<Location> locations = locationRepo.findAllByVisibleNot(false);
 
     model.addAttribute("user", user);
     model.addAttribute("pinnedPost",  userPosts.getFirst().orElse(null));

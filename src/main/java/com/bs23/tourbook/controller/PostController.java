@@ -7,13 +7,16 @@ import com.bs23.tourbook.service.PostService;
 import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -49,47 +52,67 @@ public class PostController {
   }
 
   @PostMapping("/{postId}/pin")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void pinPost(
+  public ResponseEntity<String> pinPost(
       @PathVariable("postId") Long postId,
       @AuthenticationPrincipal UserPrincipal userPrincipal
-  ) throws AccessDeniedException, NotFoundException {
-    postService.addOrUpdatePinnedPost(postId, userPrincipal.getUser());
+  )  {
+    try {
+      postService.addOrUpdatePinnedPost(postId, userPrincipal.getUser());
+      return ResponseEntity.ok("Post Updated");
+    } catch (NotFoundException e) {
+      return new ResponseEntity<>("Post Not Found", HttpStatus.NOT_FOUND);
+    } catch (ResponseStatusException e) {
+      return new ResponseEntity<>("You Can't Pin Private Post!", HttpStatus.BAD_REQUEST);
+    } catch (AccessDeniedException e) {
+      return new ResponseEntity<>("Access Denied", HttpStatus.FORBIDDEN);
+    }
   }
 
   @PostMapping("/{postId}/unpin")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void unpinPost(
+  public ResponseEntity<String> unpinPost(
       @PathVariable("postId") Long postId,
       @AuthenticationPrincipal UserPrincipal userPrincipal
-  ) throws AccessDeniedException, NotFoundException {
-    postService.unpinPost(postId, userPrincipal.getUser());
+  ) {
+    try {
+      postService.unpinPost(postId, userPrincipal.getUser());
+      return ResponseEntity.ok("Post Unpinned!");
+    } catch (NotFoundException e) {
+      return new ResponseEntity<>("Post Not Found", HttpStatus.NOT_FOUND);
+    } catch (AccessDeniedException e) {
+      return new ResponseEntity<>("Access Denied", HttpStatus.FORBIDDEN);
+    }
   }
 
   @DeleteMapping("/{postId}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deletePost(
+  public ResponseEntity<String> deletePost(
       @PathVariable("postId") Long postId,
       @AuthenticationPrincipal UserPrincipal userPrincipal
-  ) throws AccessDeniedException, NotFoundException {
-    postService.removePost(postId, userPrincipal.getUser());
+  )  {
+    try {
+      postService.removePost(postId, userPrincipal.getUser());
+      return ResponseEntity.ok("Post Deleted!");
+    } catch (NotFoundException e) {
+      return new ResponseEntity<>("Post Not Found", HttpStatus.NOT_FOUND);
+    } catch (AccessDeniedException e) {
+      return new ResponseEntity<>("Access Denied", HttpStatus.FORBIDDEN);
+    }
   }
 
-  @PatchMapping("/{postId}")
-  public String updatePost(
+  @PutMapping("/{postId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public ResponseEntity<PostForm> updatePost(
       @Valid PostForm postForm,
       BindingResult result,
       @PathVariable("postId") Long postId,
       @AuthenticationPrincipal UserPrincipal userPrincipal
   ) throws AccessDeniedException, NotFoundException {
     if (result.hasErrors()) {
-      return "redirect:/posts/" + postId;
+      return  ResponseEntity.badRequest().body(postForm);
     }
 
     postForm.setId(postId);
     postService.updatePost(postForm, userPrincipal.getUser());
-
-    return "redirect:/posts";
+    return ResponseEntity.ok().body(postForm);
   }
 
   @GetMapping("/{postId}")
@@ -108,7 +131,7 @@ public class PostController {
   }
 
   @GetMapping("/{postId}/comments")
-  public void getComments(
+  public String getComments(
     @PathVariable("postId") Long postId,
     Model model,
     @RequestParam(required = false) Optional<Integer> page,
@@ -117,6 +140,6 @@ public class PostController {
   ) {
     Page <PostComment> comments = postService.comments(postId, page, size);
     model.addAttribute("comments", comments);
-    // will sent via json & ajax
+    return "pages/comment-list";
   }
 }
