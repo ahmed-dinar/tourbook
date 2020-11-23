@@ -4,8 +4,6 @@
 <body>
     <div th:replace="fragments/navbar :: navigation"></div>
 
-
-
     <div class="container-fluid main-container">
         <div class="row">
             <div class="container">
@@ -23,6 +21,7 @@
 
                     <!-- middle column posts -->
                     <div class="p-10 w-50 bd-highlight">
+
                         <div
                                 sec:authorize="isAuthenticated()"
                                 class="card mb-4 create-post"
@@ -31,10 +30,9 @@
                                 <th:block th:replace="fragments/createpost :: postform (isEdit = false)"/></th:block>
                             </form>
                         </div>
-                        <th:block th:replace="fragments/postlist :: postlist"/>
-                        <th:block th:replace="fragments/pagination :: pagination"/>
-
-
+                        <!--   Post list will be added via ajax infinite scroll  -->
+                        <div id="posts-section"></div>
+                        <div id="post-loader" style="display: none" class="loader"></div>
                     </div>
 
                     <!-- right sidebar suggestions -->

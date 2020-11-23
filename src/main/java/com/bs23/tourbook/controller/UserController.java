@@ -9,16 +9,16 @@ import com.bs23.tourbook.data.UserRepository;
 import com.bs23.tourbook.helper.Pair;
 import com.bs23.tourbook.model.*;
 import com.bs23.tourbook.service.PostService;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,10 +46,10 @@ public class UserController {
       @RequestParam(required = false) Optional<Integer> page,
       @RequestParam(required = false) Optional<Integer> size,
       @AuthenticationPrincipal UserPrincipal userPrincipal
-  ) {
+  ) throws ResponseStatusException {
     User user = Optional
         .ofNullable(userRepo.findByUsername(username))
-        .orElseThrow(() -> new UsernameNotFoundException("No user found"));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No user found"));
 
     Pair<Optional<PinnedPost>, Page<Post>> userPosts = postService.getUserPosts(page, size, userPrincipal, user);
     List<Location> locations = locationRepo.findAllByVisibleNot(false);

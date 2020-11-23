@@ -1,8 +1,14 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="postlist">
-    <div class="card post-card animate__animated animate__fadeIn"
-         th:each="post: ${posts}"
-    >
-        <th:block th:replace="fragments/postlist :: postdetail"/>
+    <div class="animate__animated animate__fadeIn">
+        <div class="card post-card"
+             th:each="post: ${posts}"
+        >
+            <th:block th:replace="fragments/postlist :: postdetail"/>
+        </div>
+        <div class="pagination-info"
+             style="display: none;"
+             th:attr="current-page=${posts.getNumber() + 1},total-page=${posts.getTotalPages()},is-last=${posts.isLast()}"
+        ></div>
     </div>
 </th:block>
 

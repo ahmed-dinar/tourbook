@@ -17,6 +17,7 @@ body, html {
 .main-container {
     padding-top: 65px;
     min-height: 100vh;
+    margin-bottom: 80px;
 }
 
 .navbar {

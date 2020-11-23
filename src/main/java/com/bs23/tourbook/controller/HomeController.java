@@ -37,16 +37,14 @@ public class HomeController {
   public String getHome(
       Model model,
       @RequestParam(required = false) Optional<Integer> page,
-      @RequestParam(required = false) Optional<Integer> size,
-      @AuthenticationPrincipal UserPrincipal userPrincipal
+      @RequestParam(required = false) Optional<Integer> size
   ) {
-    Page<Post> posts = postService.getPublicPosts(page, size, userPrincipal);
+    Page<Post> posts = postService.getPublicPosts(page, size);
     List<Location> locations = locationRepo.findAllByVisibleNot(false);
 
     model.addAttribute("posts", posts);
     model.addAttribute("locations", locations);
     model.addAttribute("privacyList", Post.Privacy.values());
-
     return "pages/home";
   }
 }

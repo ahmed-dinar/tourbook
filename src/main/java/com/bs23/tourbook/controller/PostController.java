@@ -1,6 +1,7 @@
 package com.bs23.tourbook.controller;
 
 import com.bs23.tourbook.data.PostLikeRepository;
+import com.bs23.tourbook.helper.Pair;
 import com.bs23.tourbook.model.*;
 import com.bs23.tourbook.service.PostService;
 import javassist.NotFoundException;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -136,5 +138,21 @@ public class PostController {
     Page <PostComment> comments = postService.comments(postId, page, size);
     model.addAttribute("comments", comments);
     return "pages/comment-list";
+  }
+
+  @GetMapping
+  public String getPosts(
+      Model model,
+      @RequestParam(required = false) Optional<String> username,
+      @RequestParam(required = false) Optional<Integer> page,
+      @RequestParam(required = false) Optional<Integer> size,
+      @AuthenticationPrincipal UserPrincipal userPrincipal
+  ) throws ResponseStatusException {
+    Pair<Optional<PinnedPost>, Page<Post>> posts = postService.getPosts(username, page, size, Optional.ofNullable(userPrincipal));
+
+    model.addAttribute("posts", posts.getSecond());
+    model.addAttribute("pinnedPost",  posts.getFirst().orElse(null));
+
+    return "pages/postajax";
   }
 }

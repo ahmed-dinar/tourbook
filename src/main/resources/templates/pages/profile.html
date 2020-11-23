@@ -39,9 +39,11 @@
                                 <th:block th:replace="fragments/createpost :: postform (isEdit = false)"/>
                             </form>
                         </div>
-                        <th:block th:replace="fragments/pinnedpost :: pinnedpost"/>
-                        <th:block th:replace="fragments/postlist :: postlist"/>
-                        <th:block th:replace="fragments/pagination :: pagination"/>
+
+
+                        <!--   Post list will be added via ajax infinite scroll  -->
+                        <div id="posts-section"></div>
+                        <div id="post-loader" style="display: none" class="loader"></div>
 
                         <th:block th:replace="fragments/editpost :: editmodal"/></th:block>
                     </div>

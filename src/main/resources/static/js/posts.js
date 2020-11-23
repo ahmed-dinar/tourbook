@@ -1,23 +1,100 @@
-jQuery().ready(function(){
-    $('.edit-post .pin-post').click(pinPost);
-    $('.edit-post .unpin-post').click(unpinPost);
-    $('.edit-post .delete-post').click(deletePost);
-    $('.edit-post .modify-post').click(function () {
-      const postId = $(this).closest('.postid-holder').attr("postid");
-      const locationId = $(this).closest('.post-info').find('span.location-info').first().attr("locationid");
-      const privacy = $(this).closest('.post-info').find('span.privacy-info').first().attr("privacy");
-      const text = $(this).closest('.post-info').find('p.post-text').first().text();
+var fetching;
 
-      $('#edit-post-form input[name="postid"]').val(postId);
-      $('#edit-post-form textarea[name="text"]').val(text.trim());
-      $('#edit-post-form select[name="privacy"] option[value='+ privacy +']').attr('selected','selected');
-      $('#edit-post-form select[name="location"] option[value='+ locationId +']').attr('selected','selected');
+/**
+ * TourBook Posts
+ */
+$(document).ready(function(){
+  getPosts();
 
-      $('#edit-modal').modal('toggle');
-    });
+  $(window).scroll(function () {
+    if (!hasContent()) {
+      if ($("#no-more").length < 1) {
+        $("#posts-section").append('<div id="no-more" class="h6 mt-4" style="text-align: center; color: #8f8d88">End of content</div>');
+      }
+    }
+    else if (fetching === false && isPageBottom()) {
+      getPosts();
+    }
+  });
 
-    $('#edit-post-form').submit(editPost);
+  $(document).on('click', '.edit-post .pin-post', pinPost);
+  $(document).on('click', '.edit-post .unpin-post', unpinPost);
+  $(document).on('click', '.edit-post .delete-post', deletePost);
+  $(document).on('click', '.edit-post .modify-post', setModalContent);
+  $('#edit-post-form').submit(editPost);
 });
+
+/**
+ * Check if is in bottom of the page while scrolling
+ * @returns {boolean}
+ */
+function isPageBottom () {
+  return $(window).scrollTop() >= $(document).height() - $(window).height() - 20;
+}
+
+/**
+ * Toggle ajax loader
+ * @param show
+ */
+function toggleLoader (show = true) {
+  if ($('#post-loader').is(':visible') && !show) {
+    $('#post-loader').hide();
+  } else if (!$('#post-loader').is(':visible') && show) {
+    $('#post-loader').show();
+  }
+}
+
+/**
+ * Check if any more content available to fetch in infinite scroll
+ * @returns {jQuery|*|boolean}
+ */
+function hasContent() {
+  const info = $(".pagination-info").last();
+  return info && info.length && $(info).attr("is-last") === "false";
+}
+
+/**
+ * Set modal content for edit before opening the modal
+ */
+function setModalContent() {
+  const postId = $(this).closest('.postid-holder').attr("postid");
+  const locationId = $(this).closest('.post-info').find('span.location-info').first().attr("locationid");
+  const privacy = $(this).closest('.post-info').find('span.privacy-info').first().attr("privacy");
+  const text = $(this).closest('.post-info').find('p.post-text').first().text();
+
+  $('#edit-post-form input[name="postid"]').val(postId);
+  $('#edit-post-form textarea[name="text"]').val(text.trim());
+  $('#edit-post-form select[name="privacy"] option[value='+ privacy +']').attr('selected','selected');
+  $('#edit-post-form select[name="location"] option[value='+ locationId +']').attr('selected','selected');
+
+  $('#edit-modal').modal('toggle');
+}
+
+function getPosts() {
+  const info = $(".pagination-info").last();
+  const  page = info && info.length ? parseInt(info.attr("current-page"), 10) + 1 : 1;
+  const username =  window.location.pathname.split("/").pop();
+  console.log("page ", page);
+
+  $.ajax({
+    type: "get",
+    url: `/posts?page=${page}` + (username ? `&username=${username}` : ''),
+    dataType: "",
+    beforeSend: function () {
+      fetching = true;
+      toggleLoader();
+    },
+    success: function(result){
+      console.log("getting post success");
+      $("#posts-section").append(result);
+    },
+    error: handleError,
+    complete: function () {
+      fetching = false;
+      toggleLoader(false);
+    }
+  });
+}
 
 function editPost(e) {
     e.preventDefault();
@@ -38,13 +115,14 @@ function editPost(e) {
         console.log("result ", result);
         showSuccess("Post Updated!");
         $('#edit-modal').modal('toggle');
-        location.reload();
+        $("#posts-section").html('');
+        getPosts();
       },
       error: handleError
     });
 }
 
-function pinPost() {
+function pinPost(done) {
   const postId = $(this).closest('.postid-holder').attr("postid");
   $.ajax({
     type: "post",
@@ -54,7 +132,8 @@ function pinPost() {
     success: function(result){
       console.log("result ", result);
       showSuccess("Post Pinned!");
-      location.reload();
+      $("#posts-section").html('');
+      getPosts();
     },
     error: handleError
   });
@@ -70,7 +149,8 @@ function unpinPost() {
     success: function(result){
       console.log("result ", result);
       showSuccess('Post UnPinned!');
-      location.reload();
+      $("#posts-section").html('');
+      getPosts();
     },
     error: handleError
   });
@@ -85,7 +165,8 @@ function deletePost() {
     success: function(result){
       console.log("result ", result);
       showSuccess('Post Removed!');
-      location.reload();
+      $("#posts-section").html('');
+      getPosts();
     },
     error: handleError
   });

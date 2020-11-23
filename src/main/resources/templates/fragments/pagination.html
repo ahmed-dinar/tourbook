@@ -1,4 +1,5 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="pagination">
+
     <nav th:if="${posts.getTotalPages() > 0}" aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item" th:classappend="${posts.isFirst() ? 'disabled' : ''}">

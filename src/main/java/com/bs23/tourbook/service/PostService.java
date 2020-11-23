@@ -7,6 +7,7 @@ package com.bs23.tourbook.service;
 import com.bs23.tourbook.data.PinnedPostRepository;
 import com.bs23.tourbook.data.PostCommentRepository;
 import com.bs23.tourbook.data.PostRepository;
+import com.bs23.tourbook.data.UserRepository;
 import com.bs23.tourbook.helper.PageHelper;
 import com.bs23.tourbook.helper.Pair;
 import com.bs23.tourbook.model.*;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,12 +31,14 @@ import java.util.stream.Stream;
 @Service
 public class PostService {
 
+  private final UserRepository userRepo;
   private final PageHelper pageHelper;
   private final PostRepository postRepo;
   private final PinnedPostRepository pinnedPostRepo;
   private final PostCommentRepository postCommentRepo;
 
-  public PostService(PageHelper pageHelper, PostRepository postRepo, PinnedPostRepository pinnedPostRepo, PostCommentRepository postCommentRepo) {
+  public PostService(UserRepository userRepo, PageHelper pageHelper, PostRepository postRepo, PinnedPostRepository pinnedPostRepo, PostCommentRepository postCommentRepo) {
+    this.userRepo = userRepo;
     this.pageHelper = pageHelper;
     this.postRepo = postRepo;
     this.pinnedPostRepo = pinnedPostRepo;
@@ -88,13 +92,11 @@ public class PostService {
    *
    * @param page
    * @param size
-   * @param userPrincipal
    * @return
    */
   public Page<Post>  getPublicPosts(
       Optional<Integer> page,
-      Optional<Integer> size,
-      UserPrincipal userPrincipal
+      Optional<Integer> size
   ) {
     Pageable pageable = pageHelper.getPageable(page, size);
     return postRepo.findByPrivacyEqualsOrderByCreatedAtDesc(Post.Privacy.PUBLIC, pageable);
@@ -244,5 +246,29 @@ public class PostService {
    */
   private boolean isSameLoggedUser(UserPrincipal userPrincipal, User user) {
     return userPrincipal != null && userPrincipal.getUser().getUsername().equals(user.getUsername());
+  }
+
+
+  /**
+   * Get posts based on username query & authetication
+   * @param username
+   * @param page
+   * @param size
+   * @param userPrincipal
+   * @return
+   */
+  public Pair<Optional<PinnedPost>, Page<Post>> getPosts(
+      Optional<String> username,
+      Optional<Integer> page,
+      Optional<Integer> size,
+      Optional<UserPrincipal> userPrincipal
+  ) throws ResponseStatusException {
+    if (username.isEmpty()) {
+      return Pair.of(Optional.empty(), getPublicPosts(page, size));
+    }
+
+    User user = Optional.ofNullable(userRepo.findByUsername(username.get()))
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No user found"));
+    return getUserPosts(page, size, userPrincipal.orElse(null), user);
   }
 }
