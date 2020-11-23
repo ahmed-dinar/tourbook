@@ -3,19 +3,19 @@ var fetching;
 /**
  * TourBook Posts
  */
-$(document).ready(function(){
-  getPosts();
-
-  $(window).scroll(function () {
-    if (!hasContent()) {
-      if ($("#no-more").length < 1) {
-        $("#posts-section").append('<div id="no-more" class="h6 mt-4" style="text-align: center; color: #8f8d88">End of content</div>');
+$(document).ready(function() {
+  if (isPostsPage()) {
+    getPosts();
+    $(window).scroll(function () {
+      if (!hasContent()) {
+        if ($("#no-more").length < 1) {
+          $("#posts-section").append('<div id="no-more" class="h6 mt-4" style="text-align: center; color: #8f8d88">End of content</div>');
+        }
+      } else if (fetching === false && isPageBottom()) {
+        getPosts();
       }
-    }
-    else if (fetching === false && isPageBottom()) {
-      getPosts();
-    }
-  });
+    });
+  }
 
   $(document).on('click', '.edit-post .pin-post', pinPost);
   $(document).on('click', '.edit-post .unpin-post', unpinPost);
@@ -30,6 +30,15 @@ $(document).ready(function(){
  */
 function isPageBottom () {
   return $(window).scrollTop() >= $(document).height() - $(window).height() - 20;
+}
+
+/**
+ * will be replaced with regex may be
+ * @returns {boolean}
+ */
+function isPostsPage() {
+  const url = window.location.pathname;
+  return url === '' || url === '/' || (url.includes("users") && url.split("/").length === 3);
 }
 
 /**
