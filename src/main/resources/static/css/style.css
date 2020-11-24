@@ -15,13 +15,13 @@ body, html {
 }
 
 .main-container {
-    padding-top: 65px;
+    padding-top: 80px;
     min-height: 100vh;
     margin-bottom: 80px;
 }
 
 .navbar {
-    padding: 10px 6rem;
+    padding: 10px 4rem;
     box-shadow: inset 0 -1px #d1d1d1;
 }
 

@@ -5,49 +5,49 @@
     <div th:replace="fragments/navbar :: navigation"></div>
 
     <div class="container-fluid main-container">
-        <div class="row">
-            <div class="container">
-                <div class="d-flex flex-row">
-                    <!-- left sidebar profile -->
-                    <div class="p-4 w-25 bd-highlight">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="card-title">
-                                    Recent Places
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="container">
+            <div class="row">
+                <!-- left sidebar profile -->
+                <div class="d-sm-none d-md-block col-md-2 position-fixed" style="flex: 0 0 18.666667%; max-width: 18.666667%;">
 
-                    <!-- middle column posts -->
-                    <div class="p-10 w-50 bd-highlight">
+                      <div class="card">
+                          <div class="card-body">
+                              <div class="card-title">
+                                  Recent Places
+                              </div>
+                          </div>
+                      </div>
 
-                        <div
-                                sec:authorize="isAuthenticated()"
-                                class="card mb-4 create-post"
-                        >
-                            <form method="POST" th:action="@{/posts}">
-                                <th:block th:replace="fragments/createpost :: postform (isEdit = false)"/></th:block>
-                            </form>
-                        </div>
-                        <!--   Post list will be added via ajax infinite scroll  -->
-                        <div id="posts-section"></div>
-                        <div id="post-loader" style="display: none" class="loader"></div>
-                    </div>
-
-                    <!-- right sidebar suggestions -->
-                    <div class="p-4 w-25 bd-highlight">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="card-title">
-                                    Top Travellers
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <th:block th:replace="fragments/editpost :: editmodal"/></th:block>
                 </div>
+
+                <!-- middle column posts -->
+                <div class="col-sm-12 col-md-7 offset-md-2 pl-5">
+                    <div
+                            sec:authorize="isAuthenticated()"
+                            class="card mb-4 create-post"
+                    >
+                        <form method="POST" th:action="@{/posts}">
+                            <th:block th:replace="fragments/createpost :: postform (isEdit = false)"/></th:block>
+                        </form>
+                    </div>
+                    <!--   Post list will be added via ajax infinite scroll  -->
+                    <div id="posts-section"></div>
+                    <div id="post-loader" style="display: none" class="loader"></div>
+                </div>
+
+                <!-- right sidebar suggestions -->
+                <div class="d-sm-none d-md-block col-md-3 offset-md-8 position-fixed">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title">
+                                Top Travellers
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <th:block th:replace="fragments/editpost :: editmodal"/></th:block>
             </div>
         </div>
     </div>
